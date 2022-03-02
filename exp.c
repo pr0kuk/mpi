@@ -18,14 +18,14 @@ int main(int argc, char *argv[])
     }
     int n = atoi(argv[1]), my_rank = 0, commsize = 0, i = 0;
     long double c_k = 0, sumc_k = 0, Result = 0, sum = 0;
-    double startwtime = 0, endwtime = 0;
+    double tstart = 0, tfinish = 0;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &commsize);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank); 
  
     if (my_rank == 0)
-        startwtime = MPI_Wtime();
+        tstart = MPI_Wtime();
 
     MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
@@ -35,8 +35,8 @@ int main(int argc, char *argv[])
     MPI_Reduce(&sumc_k, &Result, 1, MPI_LONG_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     if (my_rank == 0) {   
         printf("\nResult %.70Lf\n", Result);
-        endwtime = MPI_Wtime();
-        printf("Time %f\n", endwtime-startwtime);  
+        tfinish = MPI_Wtime();
+        printf("Time %f\n", tfinish - tstart);  
     }
 
     MPI_Finalize();
