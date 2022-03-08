@@ -24,6 +24,7 @@ void fact(big_int * c_k, int s, int n)
        multiply(c_k, ss);
        add(ss, od);
     }
+    free(rr);
 }
 
 long int calc_n(long int p)
@@ -42,6 +43,7 @@ long int calc_n(long int p)
         add(j, dcreate("1"));
         i++;
     }
+    free(t);
     return i + 2;
 }
 
@@ -60,8 +62,9 @@ int main(int argc, char *argv[])
     long int p = atol(argv[1]), n = calc_n(p);
     if (my_rank == 0)
         t3 = MPI_Wtime();
-    char Result[MAXCHAR * 10];
-    char * sumch_k;
+    //char Result[MAXCHAR * 10];
+    char * Result = (char*)malloc(MAXCHAR * 4);
+    char *sumch_k = (char*)malloc(MAXCHAR);
     big_int* c_k = dcreate("1"), * sum_k = dcreate("0");
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &commsize);
@@ -80,6 +83,7 @@ int main(int argc, char *argv[])
         sumch_k = dprint(sum_k);
     }
     //printf("summs %s %d\n", sumch_k, my_rank);
+    //printf("strlen %ld\n", strlen(sumch_k));
     MPI_Gather(sumch_k, MAXCHAR, MPI_CHAR, Result, MAXCHAR, MPI_CHAR, 0, MPI_COMM_WORLD);
     if (my_rank == 0) {
         t2 = MPI_Wtime();
@@ -106,6 +110,8 @@ int main(int argc, char *argv[])
             printf("%c", ans[i]);
         printf("\n");
     }
+    free(sumch_k);
+    free(Result);
     MPI_Finalize();
     return 0;
 }
