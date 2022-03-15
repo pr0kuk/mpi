@@ -11,15 +11,12 @@
 void fact(big_int * c_k, int s, int n)
 {
     int i = 0, t = s, lent = 0;
-    char * odin = "1";
-    while (t > 0)
-        t /= 10, lent++;
-    t = s;
+    for (t = s; t > 0; lent++, t/= 10);
     char * rr = (char*)malloc(lent);
-    for (i = 0; i < lent; i++)
+    for (i = 0, t = s; i < lent; i++)
         rr[lent-i-1] = t % 10 + '0', t /= 10;
     rr[lent] = 0;
-    big_int * od = dcreate(odin), *ss = dcreate(rr);
+    big_int * od = dcreate("1"), *ss = dcreate(rr);
     for (i = s; i <= n; i++) {
        multiply(c_k, ss);
        add(ss, od);
@@ -30,14 +27,10 @@ void fact(big_int * c_k, int s, int n)
 long int calc_n(long int p)
 {
     long i = 1, l = 0, n = 1;
-    for (i = 1; l + 1 < p; i++) {
-        n *= i;
-        for (;n >= 100; l++)
-            n /= 10;
-    }
+    for (; l + 1 < p; n*=i++)
+        for (;n >= 100; l++, n/=10);
     return i + 2;
 }
-
 
 
 int main(int argc, char *argv[])
@@ -55,8 +48,7 @@ int main(int argc, char *argv[])
     big_int* c_k = dcreate("1"), * sum_k = dcreate("0"), * dnmr = dcreate("1"), * nmr, * rem, * chast, * des = dcreate("10");
     char Result[MAXCHAR * 10], part_ans[MAXCHAR];
     char * ans = (char*)malloc(MAXCHAR), *sumch_k = (char*)malloc(MAXCHAR);
-    for (i = 0; i < MAXCHAR; i++)
-        part_ans[i] = 0;
+    memset(part_ans, 0, MAXCHAR);
     tstart = MPI_Wtime();
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &commsize);
@@ -77,7 +69,6 @@ int main(int argc, char *argv[])
         add(sum_k, c_k);
         sumch_k = dprint(sum_k);
     }
-
 //DIVISION
     fact(dnmr, 1, n);
     nmr = dcreate(sumch_k);
@@ -88,7 +79,6 @@ int main(int argc, char *argv[])
         part_ans[i] = dprint(chast)[0];
     }
     tcalcf = MPI_Wtime();
-
 //GATHERING & SUMMING
     MPI_Gather(part_ans, MAXCHAR, MPI_CHAR, Result, MAXCHAR, MPI_CHAR, 0, MPI_COMM_WORLD);
     if (my_rank == 0) {
@@ -104,14 +94,13 @@ int main(int argc, char *argv[])
         }
         tfinish = MPI_Wtime();
 //OUTPUT
-        //ans = dprint(summa0);
-        //printf("\n");
-        //for (i = 0; i < p + 2; i++) {
-        //    if (i == 1)
-        //        printf(".");
-        //    printf("%c", ans[i]);
-        //}
-        //printf("\n");
+        ans = dprint(summa0);
+        printf("\n");
+        for (i = 0; i < p + 2; i++) {
+            if (i == 1)
+                printf(".");
+            printf("%c", ans[i]);
+        }
         printf("\n");
         printf("tgeneral %lf\n", tfinish - tstart);
         printf("tmain %lf\n", tcalcf - tcalcs);
