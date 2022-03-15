@@ -55,8 +55,7 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank); 
     
     if (my_rank == 0) {
-        for(i = 0; i < MAXCHAR * 5; i++)
-            Result[i] = 0;
+        memset(Result, 0, MAXCHAR * 5);
         n = calc_n(p);
     }
 
