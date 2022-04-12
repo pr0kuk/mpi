@@ -30,8 +30,8 @@ int print_ans(int*arr, int t, int n)
     return 0;
 }
 
-int file_arr(int* marr, int n) {
-    FILE * fd = fopen("in_gen.txt", "r");
+int file_arr(int* marr, int n, char* filename) {
+    FILE * fd = fopen(filename, "r");
     int i = 0;
     for(i = 0; i < n; i++)
         fscanf(fd, "%d", marr+i);
@@ -63,6 +63,7 @@ int main(int argc, char* argv[])
 {
     int min = 1 << 31;
     int n = atoi(argv[1]), i = 0, n2 = 0, j =0, k =0, c = 0, l = 0, d = 0;
+    char* filename = argv[2];
     int my_rank, commsize, np, t;
     double t_start, t_finish;
     int * marr, *rarr, *narr;
@@ -73,7 +74,7 @@ int main(int argc, char* argv[])
     marr = (int*)malloc(t*sizeof(int));
     rarr = (int*)malloc(t*sizeof(int));
     init_arr(marr, rarr, n ,t);
-    file_arr(marr, n);
+    file_arr(marr, n, filename);
     if (my_rank == 0) {
         printf("\n");
         print_arr(marr, t);
