@@ -31,7 +31,7 @@ int print_ans(int*arr, int t, int n)
 }
 
 int file_arr(int* marr, int n) {
-    FILE * fd = fopen("in.txt", "r");
+    FILE * fd = fopen("in_gen.txt", "r");
     int i = 0;
     for(i = 0; i < n; i++)
         fscanf(fd, "%d", marr+i);
