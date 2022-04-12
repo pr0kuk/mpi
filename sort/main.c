@@ -61,13 +61,13 @@ int get_np(int n, int commsize, int* np, int* t) {
 int bitonic_sort(int* narr, int k, int np) {
     int j = 0, l = 0, i = 0, c = 0;
     for (;k <= np; k *= 2) {
-        for (j=k>>1; j>0; j=j>>1) {
+        for (j = k >> 1; j > 0; j = j >> 1) {
             for (i = 0; i < np; i++) {
-                l = i^j;
+                l = i ^ j;
                 if (l > i) {
-                    if ((i&k) == 0 && narr[i] > narr[l])
+                    if ((i & k) == 0 && narr[i] > narr[l])
                         SWAP(narr, i, l);
-                    if ((i&k) != 0 && narr[i] < narr[l])
+                    if ((i & k) != 0 && narr[i] < narr[l])
                         SWAP(narr, i, l);
                 }
             }
