@@ -58,13 +58,28 @@ int get_np(int n, int commsize, int* np, int* t) {
     *np = *t;
     for (;*t<commsize*(*np); (*t)*=2);
 }
+int bitonic_sort(int* narr, int k, int np) {
+    int j = 0, l = 0, i = 0, c = 0;
+    for (;k <= np; k *= 2) {
+        for (j=k>>1; j>0; j=j>>1) {
+            for (i = 0; i < np; i++) {
+                l = i^j;
+                if (l > i) {
+                    if ((i&k) == 0 && narr[i] > narr[l])
+                        SWAP(narr, i, l);
+                    if ((i&k) != 0 && narr[i] < narr[l])
+                        SWAP(narr, i, l);
+                }
+            }
+        }
+    }
+    return k;
+}
 
 int main(int argc, char* argv[])
 {
-    int min = 1 << 31;
-    int n = atoi(argv[1]), i = 0, n2 = 0, j =0, k =0, c = 0, l = 0, d = 0;
+    int min = 1 << 31, n = atoi(argv[1]), i = 0, j = 0, k = 0, c = 0, l = 0, my_rank = 0, commsize = 0, np = 0, t = 0;
     char* filename = argv[2];
-    int my_rank, commsize, np, t;
     double t_start, t_finish;
     int * marr, *rarr, *narr;
     MPI_Init(&argc, &argv);
@@ -82,34 +97,10 @@ int main(int argc, char* argv[])
     }
     t_start = MPI_Wtime();
     narr = marr + my_rank*np;
-    for (k = 2; k <= np; k *= 2) {
-        for (j=k>>1; j>0; j=j>>1) {
-            for (i = 0; i < np; i++) {
-                l = i^j;
-                if (l > i) {
-                    if ((i&k) == 0 && narr[i] > narr[l])
-                        SWAP(narr, i, l);
-                    if ((i&k) != 0 && narr[i] < narr[l])
-                        SWAP(narr, i, l);
-                }
-            }
-        }
-    }
+    k = bitonic_sort(narr, 2, np);
     MPI_Gather(marr+my_rank*np, np, MPI_INT, rarr, np, MPI_INT, 0, MPI_COMM_WORLD);
     if (my_rank == 0) {
-        for (k = k /2; k <= t; k *= 2) {
-            for (j=k>>1; j>0; j=j>>1) {
-                for (i = 0; i < t; i++) {
-                    l = i^j;
-                    if (l > i) {
-                        if ((i&k) == 0 && rarr[i]> rarr[l])
-                            SWAP(rarr, i, l);   
-                        if ((i&k) != 0 && rarr[i] < rarr[l])
-                            SWAP(rarr, i, l);
-                    }
-                }
-            }
-        }
+        bitonic_sort(rarr, k/2, t);
         t_finish = MPI_Wtime();
         print_ans(rarr, t, n);
         printf("TIME %lf\n", t_finish-t_start);
