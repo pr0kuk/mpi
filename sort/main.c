@@ -1,4 +1,3 @@
-#define MAX_DIGITS 6
 #define SWAP(arr, i, l) do{c = *(arr+i), *(arr+i) = *(arr+l), *(arr+l) = c;}while(0)
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,12 +41,6 @@ int init_arr(int* marr, int* rarr,int n, int t) {
     int i = 0, min = 1 << 31;
     for(i = 0; i < t; marr[i++] = min);
     for(i = 0; i < t; rarr[i++] = min);
-    /*for (i = 0; i < n; i++)
-    marr[i] = n - i;
-    marr[5] = 228;
-    marr[11] = 1;
-    marr[3] = 47;
-    marr[9] = 2;*/
 }
 
 int get_np(int n, int commsize, int* np, int* t) {
@@ -93,7 +86,6 @@ int main(int argc, char* argv[])
     if (my_rank == 0) {
         printf("\n");
         print_arr(marr, t);
-        //printf("np is %d, t is %d\n", np, t);
     }
     t_start = MPI_Wtime();
     narr = marr + my_rank*np;
