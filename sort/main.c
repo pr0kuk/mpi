@@ -67,7 +67,7 @@ int bitonic_sort(int* narr, int k, int np) {
 
 int main(int argc, char* argv[])
 {
-    int min = 1 << 31, n = atoi(argv[1]), i = 0, j = 0, k = 0, c = 0, l = 0, my_rank = 0, commsize = 0, np = 0, t = 0;
+    int n = atoi(argv[1]), k = 0, my_rank = 0, commsize = 0, np = 0, t = 0;
     char* filename = argv[2];
     double t_start = 0, t_finish = 0;
     int * marr, *rarr, *narr;
