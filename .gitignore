@@ -5,3 +5,9 @@ intro_tasks/row
 intro_tasks/helloworld
 mpiput
 .vscode/
+sort/reverse
+sort/best
+sort/best.txt
+sort/*.txt
+sort/gen_mas
+sort/worst
