@@ -1,12 +1,7 @@
 #define SWAP(arr, i, l) do{c = *(arr+i), *(arr+i) = *(arr+l), *(arr+l) = c;}while(0)
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include "mpi.h"
-#include <fcntl.h>
-#include <string.h>
-#include <unistd.h>
 
 int print_arr(int* arr, int n)
 {
@@ -51,6 +46,7 @@ int get_np(int n, int commsize, int* np, int* t) {
     *np = *t;
     for (;*t<commsize*(*np); (*t)*=2);
 }
+
 int bitonic_sort(int* narr, int k, int np) {
     int j = 0, l = 0, i = 0, c = 0;
     for (;k <= np; k *= 2) {
@@ -73,22 +69,25 @@ int main(int argc, char* argv[])
 {
     int min = 1 << 31, n = atoi(argv[1]), i = 0, j = 0, k = 0, c = 0, l = 0, my_rank = 0, commsize = 0, np = 0, t = 0;
     char* filename = argv[2];
-    double t_start, t_finish;
+    double t_start = 0, t_finish = 0;
     int * marr, *rarr, *narr;
+
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &commsize);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+    
     get_np(n, commsize, &np, &t);
     marr = (int*)malloc(t*sizeof(int));
     rarr = (int*)malloc(t*sizeof(int));
     init_arr(marr, rarr, n ,t);
     file_arr(marr, n, filename);
+
     if (my_rank == 0) {
         printf("\n");
-        print_arr(marr, t);
+        //print_arr(marr, t);
     }
     t_start = MPI_Wtime();
-    narr = marr + my_rank*np;
+    narr = marr + my_rank * np;
     k = bitonic_sort(narr, 2, np);
     MPI_Gather(marr+my_rank*np, np, MPI_INT, rarr, np, MPI_INT, 0, MPI_COMM_WORLD);
     if (my_rank == 0) {
