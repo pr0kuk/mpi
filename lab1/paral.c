@@ -80,7 +80,6 @@ int main(int argc, char* argv[])
     int mp = (m + commsize - 1) / commsize;
     for (i = 1; i < (n-1); i++) {
         for (j = my_rank * mp + 1; (j < (m-1)) && (j < my_rank * mp + mp + 1); j++) {
-
             if ((j != 1) && (j % mp == 1) && (i != 1))
                 MPI_Recv(grid+i*m+j-1, 1, MPI_LONG_DOUBLE, (my_rank + commsize-1)%commsize, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             if ((j != m-2) && (j % mp == 0) && (i != 1))
@@ -94,18 +93,13 @@ int main(int argc, char* argv[])
                 ugolok(grid, n, m, h, tao, i, m-1);
         }
     }
-    if ((my_rank != 0) && (my_rank != commsize-1))
+    if (my_rank)
         for (i = 1; i < n; i++)
-            MPI_Send(grid+i*m +my_rank*mp+1, mp, MPI_LONG_DOUBLE, 0, 1, MPI_COMM_WORLD);
-    if (my_rank == commsize-1)
-        for (i = 1; i < n; i++)
-            MPI_Send(grid+i*m +my_rank*mp+1, m-mp*(commsize-1)-1, MPI_LONG_DOUBLE, 0, 1, MPI_COMM_WORLD);
-    if (!my_rank) {
-        for (i = 1; i < commsize - 1; i++)
+            MPI_Send(grid+i*m +my_rank*mp+1, (my_rank == commsize-1 && m%mp != 0) ? m%mp : mp, MPI_LONG_DOUBLE, 0, 1, MPI_COMM_WORLD);
+    else {
+        for (i = 1; i < commsize; i++)
             for (j = 1; j < n; j++)
-                MPI_Recv(grid+i*mp+1+j*m,mp, MPI_LONG_DOUBLE, i, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        for (j = 1; j < n; j++)
-            MPI_Recv(grid+(commsize-1)*mp+1+j*m, m-mp*(commsize-1)-1, MPI_LONG_DOUBLE, commsize-1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                MPI_Recv(grid+i*mp+1+j*m,(i == commsize-1 && m%mp != 0) ? m%mp : mp, MPI_LONG_DOUBLE, i, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         t_finish = MPI_Wtime();
         //printf("TIME %lf\n", t_finish-t_start);
         print_grid(grid, n, m);
