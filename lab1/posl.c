@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include "mpi.h"
 long double phi(long double x) {
     return (x*x*x) / (12 * (0.6*0.6));
 }
@@ -27,6 +29,15 @@ int print_grid(long double* grid, int n, int m) {
         printf("\n");
     }
 }
+
+int gnuplotformat(long double* grid, int n, int m, long double tao, long double h) {
+    int i =0, j = 0;
+    for (i =0; i < n; i ++) {
+        for (j = 0;j < m; j++)
+            printf("%Lf %Lf %Lf\n", i*tao, j*h, *(grid+i*m+j));
+        printf("\n");
+    }
+}
 int fkm(long double t, long double x) {
     return t*x;
 }
@@ -42,10 +53,15 @@ int ugolok(long double * grid, int n, int m, long double h, long double tao, int
 
 int main(int argc, char* argv[])
 {
-    int n = 200, m = 200;
+    int n = atoi(argv[1]), m = atoi(argv[1]);
+    time_t start = clock(), finish = 0; 
     long double tao = 0.01, h = 0.01;
     int i = 0, j = 0;
+    int commsize, my_rank;
     long double* grid = (long double*)calloc(n*m, sizeof(long double));
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &commsize);
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     if (grid == NULL) {
         perror("MALLOC: ");
         return -1;
@@ -58,5 +74,10 @@ int main(int argc, char* argv[])
             krest(grid, n , m, h, tao, i, j);
         ugolok(grid, n, m, h, tao, i, m-1);
     }
+    finish = clock();
+    //printf("TIME %Lf seconds\n", (long double)(finish-start)/CLOCKS_PER_SEC);
     print_grid(grid, n, m);
+    //gnuplotformat(grid, n, m, tao, h);'
+    MPI_Finalize();
+
 }
