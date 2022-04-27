@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
         MPI_Send(&i, 1, MPI_INT, (my_rank+1)%commsize, 0, MPI_COMM_WORLD);
     }
     t_finish = MPI_Wtime();
-    printf("TIME %lf\n", (t_finish - t_start)/(n*commsize));
+    printf("TIME %.10lf\n", (t_finish - t_start)/(n*commsize));
     MPI_Finalize();
     return 0;
 }

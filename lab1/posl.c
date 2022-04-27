@@ -30,6 +30,13 @@ int print_grid(long double* grid, int n, int m) {
     }
 }
 
+int print_str(long double* grid, int m) {
+    int i = 0;
+    for (i = 0; i < m; i++)
+        printf("%Lf ", *(grid+i));
+    printf("\n");
+}
+
 int gnuplotformat(long double* grid, int n, int m, long double tao, long double h) {
     int i =0, j = 0;
     for (i =0; i < n; i ++) {
@@ -76,7 +83,8 @@ int main(int argc, char* argv[])
     }
     finish = clock();
     //printf("TIME %Lf seconds\n", (long double)(finish-start)/CLOCKS_PER_SEC);
-    print_grid(grid, n, m);
+    //print_grid(grid, n, m);
+    print_str(grid+(n-1)*m, m);
     //gnuplotformat(grid, n, m, tao, h);'
     MPI_Finalize();
 
