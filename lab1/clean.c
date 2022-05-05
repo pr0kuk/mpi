@@ -100,15 +100,15 @@ int change_str(long double* soo, long double* so, long double* sn, int size) {
 int main(int argc, char* argv[])
 {
     int n = atoi(argv[1]), m = n, i = 0, j = 0, *sizes, *startpos, commsize, my_rank;
-    long double tao = 0.01, h = 0.01, * grid = (long double*)calloc(n*m, sizeof(long double)), *stroo, *stro, *strn, *Result;
+    long double tao = 0.01, h = 0.01, /** grid = (long double*)calloc(n*m, sizeof(long double)),*/ *stroo, *stro, *strn, *Result, *temp;
     double t_start = 0, t_finish = 0;
-    if (grid == NULL) {
-        perror("MALLOC: ");
-        return -1;
-    }
-    init_grid(grid, n, m, h, tao);
+    Result = (long double*)calloc(m, sizeof(long double));
+    temp = (long double*)calloc(m*2, sizeof(long double));
+
+    init_grid(temp, 2, m, h, tao);
+
     for (i = 1; i < m; i++)
-        ugolok(grid, n, m, h, tao, 0, i);
+        ugolok(temp, 2, m, h, tao, 0, i);
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &commsize);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
@@ -118,19 +118,19 @@ int main(int argc, char* argv[])
     stroo = (long double*)calloc(sizes[my_rank] + 2, sizeof(long double));
     stro = (long double*)calloc(sizes[my_rank] + 2, sizeof(long double));
     strn = (long double*)calloc(sizes[my_rank] + 2, sizeof(long double));
-    Result = (long double*)calloc(m, sizeof(long double));
+
 
     if (my_rank == 0) {
-        copy_str(stroo+1, grid, sizes[my_rank]+1);
-        copy_str(stro+1, grid+m, sizes[my_rank]+1);
+        copy_str(stroo+1, temp, sizes[my_rank]+1);
+        copy_str(stro+1, temp+m, sizes[my_rank]+1);
     }
     if (my_rank == commsize - 1) {
-            copy_str(stroo, grid+startpos[my_rank] - 1, sizes[my_rank]+1);
-            copy_str(stro, grid+startpos[my_rank] - 1 + m, sizes[my_rank]+1);
+            copy_str(stroo, temp+startpos[my_rank] - 1, sizes[my_rank]+1);
+            copy_str(stro, temp+startpos[my_rank] - 1 + m, sizes[my_rank]+1);
     }
     if (my_rank !=0 && my_rank != commsize - 1) {
-            copy_str(stroo, grid+startpos[my_rank] - 1, sizes[my_rank]+2);
-            copy_str(stro, grid+startpos[my_rank] - 1 + m, sizes[my_rank]+2);
+            copy_str(stroo, temp+startpos[my_rank] - 1, sizes[my_rank]+2);
+            copy_str(stro, temp+startpos[my_rank] - 1 + m, sizes[my_rank]+2);
     }
     /*if (!my_rank) {
         for (i = 0; i < commsize; i++) {
@@ -183,5 +183,4 @@ int main(int argc, char* argv[])
         printf("NP:%d, n:%d, TIME %lf\n", commsize, n, t_finish-t_start);
     }
     MPI_Finalize();
-    return 0;
 }
