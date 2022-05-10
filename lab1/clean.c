@@ -5,6 +5,11 @@ long double phi(long double x) {
     return (x*x*x) / (12 * (0.6*0.6));
 }
 
+
+long double analytical(long double x, long double t) {
+    long double c = 0.6
+    return (x+c*t)*((x+c*t)*(x+c*t)/3-(x-c*t)*(x-c*t))/8/c/c+(x-c*t)*(x-c*t)*(x-c*t)/6/c/c;
+}
 long double psi(long double t) {
     return 0.6 * (t*t*t) / 12;
 }
@@ -180,6 +185,9 @@ int main(int argc, char* argv[])
         copy_str(Result, strn+1, sizes[my_rank]);
         t_finish = MPI_Wtime();
         //print_str(Result,m);
+        printf("ANALITYCAL: %Lf, %Lf\n", analytical(n*h, m*tao));
+        printf("CALC: %Lf\n", Result[m-1]);
+        //print_str(Result, m);
         printf("NP:%d, n:%d, TIME %lf\n", commsize, n, t_finish-t_start);
     }
     MPI_Finalize();
