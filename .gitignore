@@ -19,3 +19,13 @@ lab1/4.txt
 lab1/*txt
 lab1/posl
 lab1/timesend
+*.cmake
+Makefile
+*.make
+*.marks
+lab2/int
+*lab2link.txt
+*.minternal
+*.bin
+*CMakeFiles
+*CMakeCache.txt

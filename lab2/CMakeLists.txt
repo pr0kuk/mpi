@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.16)
+project(adaptintegr)
+add_executable(int main.c)
+target_link_libraries(int PRIVATE pthread dl)
+target_link_libraries(int PRIVATE m dl)
