@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.16)
+project(intro_pthreads)
+add_executable(helloworld helloworld.c)
+target_link_libraries(helloworld PRIVATE pthread dl)
+add_executable(circle circle.c)
+target_link_libraries(circle PRIVATE pthread dl)
+add_executable(row row.c)
+target_link_libraries(row PRIVATE pthread dl)
